@@ -22,7 +22,7 @@ SOFTWARE.
 import dbus
 import dbus.service
 
-from bletools import BleTools
+from .bletools import BleTools
 
 BLUEZ_SERVICE_NAME = "org.bluez"
 LE_ADVERTISING_MANAGER_IFACE = "org.bluez.LEAdvertisingManager1"
@@ -114,7 +114,7 @@ class Advertisement(dbus.service.Object):
         print("%s: Released!" % self.path)
 
     def register_ad_callback(self):
-        print("GATT advertisement registered")
+        print("Perfil GATT BLE pronto para conexão")
 
     def register_ad_error_callback(self):
         print("Failed to register GATT advertisement")

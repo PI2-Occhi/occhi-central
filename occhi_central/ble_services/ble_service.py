@@ -27,7 +27,7 @@ try:
     from gi.repository import GObject
 except ImportError:
     import gobject as GObject
-from bletools import BleTools
+from .bletools import BleTools
 
 BLUEZ_SERVICE_NAME = "org.bluez"
 GATT_MANAGER_IFACE = "org.bluez.GattManager1"
@@ -82,7 +82,7 @@ class Application(dbus.service.Object):
         return response
 
     def register_app_callback(self):
-        print("GATT application registered")
+        print("GATT BLE iniciado")
 
     def register_app_error_callback(self, error):
         print("Failed to register application: " + str(error))
