@@ -41,7 +41,7 @@ class MQTTClient:
                 print(
                     "Repassando estado do sensor: {}".format(str(msg.payload.decode()))
                 )
-                sensor = msg.topic.split('/')[-1]
+                sensor = msg.topic.split("/")[-1]
                 self.sensors_data.append({sensor, msg})
 
         self.client.subscribe(self.sensors_topic)

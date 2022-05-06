@@ -23,7 +23,13 @@ def main():
     mqtt_subscriber.start()
 
     print("Iniciando BLE ...")
-    ble_communication = Thread(target=run_ble, args=(mqtt_client.publish,sensors_data,))
+    ble_communication = Thread(
+        target=run_ble,
+        args=(
+            mqtt_client.publish,
+            sensors_data,
+        ),
+    )
     ble_communication.start()
 
     mqtt_subscriber.join()
