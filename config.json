@@ -1,0 +1,8 @@
+{
+    "mqtt": {
+        "broker_url": "192.168.0.70",
+        "sensors_topic": "/sensors/#",
+        "port": 1883,
+        "movements_topic": "/movement/instructions"
+    }
+}
