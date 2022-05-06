@@ -8,6 +8,7 @@ authors = ["Your Name <you@example.com>"]
 python = "^3.7"
 paho-mqtt = "^1.6.1"
 dbus-next = "^0.2.3"
+black = "^22.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
