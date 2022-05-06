@@ -3,15 +3,19 @@
 import dbus
 from advertisement import Advertisement
 from ble_service import Application, Service, Characteristic, Descriptor
+from translator import translate_message
 
 GATT_CHRC_IFACE = "org.bluez.GattCharacteristic1"
 NOTIFY_TIMEOUT = 5000
 
-class OcchiAdvertisement(Advertisement):
+
+class OcchiAdvertisement(Advertisement, send_mqtt_message):
     def __init__(self, index):
         Advertisement.__init__(self, index, "peripheral")
         self.add_local_name("Cadeira Occhi")
         self.include_tx_power = True
+        self.send_mqtt_message = send_mqtt_message
+
 
 class ControlService(Service):
     CONTROL_SVC_UUID = "4079e396-1c21-46fc-bd36-dc1886766b29"
@@ -20,17 +24,20 @@ class ControlService(Service):
         Service.__init__(self, index, self.CONTROL_SVC_UUID, True)
         self.add_characteristic(CommandCharacteristic(self))
 
+
 class CommandCharacteristic(Characteristic):
     COMMAND_CHARACTERISTIC_UUID = "ef00490b-5c12-44be-bc6b-546850faaa0a"
 
     def __init__(self, service):
         Characteristic.__init__(
-                self, self.COMMAND_CHARACTERISTIC_UUID,
-                ["write"], service)
+            self, self.COMMAND_CHARACTERISTIC_UUID, ["write"], service
+        )
 
     def WriteValue(self, value, options):
-        val = str(value).upper()
-        # send
+        command = str(value).upper()
+        translated_command = translate_message(command)
+        self.send_mqtt_message(translated_command)
+
 
 class SensorsService(Service):
     SENSORS_SVC_UUID = "36752d4f-07d2-4b8c-b533-6dbc8f5cae92"
@@ -39,6 +46,7 @@ class SensorsService(Service):
         Service.__init__(self, index, self.SENSORS_SVC_UUID, True)
         self.add_characteristic(PowerCharacteristic(self))
 
+
 class PowerCharacteristic(Characteristic):
     POWER_CHARACTERISTIC_UUID = "ac9c9ebf-3b91-4b4b-8c91-355d4d712eab"
 
@@ -46,8 +54,8 @@ class PowerCharacteristic(Characteristic):
         self.notifying = True
 
         Characteristic.__init__(
-                self, self.POWER_CHARACTERISTIC_UUID,
-                ["notify", "read"], service)
+            self, self.POWER_CHARACTERISTIC_UUID, ["notify", "read"], service
+        )
 
     def get_power(self):
         strtemp = str("KAT")
@@ -82,18 +90,16 @@ class PowerCharacteristic(Characteristic):
         return value
 
 
-def run():
+def run_ble(send_mqtt_message):
     app = Application()
     app.add_service(ControlService(0))
     app.add_service(SensorsService(1))
     app.register()
 
-    adv = OcchiAdvertisement(0)
+    adv = OcchiAdvertisement(0, send_mqtt_message)
     adv.register()
 
     try:
         app.run()
     except KeyboardInterrupt:
         app.quit()
-
-run()
